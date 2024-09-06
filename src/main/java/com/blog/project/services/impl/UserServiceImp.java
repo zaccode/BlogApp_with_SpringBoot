@@ -11,7 +11,7 @@ import com.blog.project.entities.User;
 import com.blog.project.payloads.UserDto;
 import com.blog.project.repository.UserRepo;
 import com.blog.project.services.UserService;
-import com.blog.project.exceptions.ResourceNotFoundExecption;
+import com.blog.project.exceptions.ResourceNotFoundException;
 
 @Service
 public class UserServiceImp implements UserService {
@@ -32,7 +32,7 @@ public class UserServiceImp implements UserService {
 	@Override
 	public UserDto updateUser(UserDto userDto, Integer userId) {
 		User user = this.userRepo.findById(userId)
-				.orElseThrow((()-> new ResourceNotFoundExecption("User","Id",userId)));
+				.orElseThrow((()-> new ResourceNotFoundException("User","Id",userId)));
 		user.setName(userDto.getName());
 		user.setEmail(userDto.getEmail());
 		user.setPassword(userDto.getPassword());
@@ -47,7 +47,7 @@ public class UserServiceImp implements UserService {
 	@Override
 	public UserDto getUserById(Integer userId) {
 		User user = this.userRepo.findById(userId).
-				orElseThrow(()-> new ResourceNotFoundExecption("User","Id",userId));
+				orElseThrow(()-> new ResourceNotFoundException("User","Id",userId));
 		return this.userToDto(user);
 	}
 
@@ -62,7 +62,7 @@ public class UserServiceImp implements UserService {
 	@Override
 	public void deleteUser(Integer userId) {
 		User user = this.userRepo.findById(userId).
-				orElseThrow(()-> new ResourceNotFoundExecption("User","Id",userId));
+				orElseThrow(()-> new ResourceNotFoundException("User","Id",userId));
 		this.userRepo.delete(user);
 
 	}
