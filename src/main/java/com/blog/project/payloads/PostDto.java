@@ -12,6 +12,7 @@ import lombok.*;
 @Getter
 @NoArgsConstructor
 public class PostDto {
+	private Integer postId;
 	@NotBlank
 	@Size(min=4,message="Title cannot be blank")
 	private String postTitle;

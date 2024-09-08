@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
 import com.blog.project.entities.Category;
@@ -13,6 +14,7 @@ import com.blog.project.entities.Post;
 import com.blog.project.entities.User;
 import com.blog.project.exceptions.ResourceNotFoundException;
 import com.blog.project.payloads.PostDto;
+import com.blog.project.payloads.PostResponse;
 import com.blog.project.repository.CategoryRepo;
 import com.blog.project.repository.PostRepo;
 import com.blog.project.repository.UserRepo;
@@ -72,10 +74,20 @@ public class PostServiceImp implements PostService {
 	}
 
 	@Override
-	public List<PostDto> getAllPost() {
-		List<Post>posts = this.postRepo.findAll();
+	public PostResponse getAllPost(Integer pageNumber,Integer pageSize,String sortBy,String sortDir) {
+		Pageable p = (sortDir.equalsIgnoreCase("desc"))?PageRequest.of(pageNumber, pageSize,Sort.by(sortBy).descending()):PageRequest.of(pageNumber, pageSize,Sort.by(sortBy).ascending());
+		Page<Post> pagePost = this.postRepo.findAll(p);
+		List<Post>posts = pagePost.getContent();
 		List<PostDto>postDtos = posts.stream().map((post)->this.modelMapper.map(post,PostDto.class)).collect(Collectors.toList());
-		return postDtos;
+		
+		PostResponse postResponse = new PostResponse();
+		postResponse.setContent(postDtos);
+		postResponse.setPageNumber(pagePost.getNumber());
+		postResponse.setPageSize(pagePost.getSize());
+		postResponse.setTotalElement(pagePost.getTotalElements());
+		postResponse.setTotalPages(pagePost.getTotalPages());
+		postResponse.setLastPage(pagePost.isLast());
+		return postResponse;
 	}
 
 	@Override
@@ -107,9 +119,12 @@ public class PostServiceImp implements PostService {
 	}
 
 	@Override
-	public List<PostDto> searchPosts(String keyword) {
-		// TODO Auto-generated method stub
-		return null;
+	public List<PostDto> searchPosts(String keywords) {
+		//manual query method called then
+		//List<Post>posts = this.postRepo.searchByTitle("%"+keyword+"%");
+		List<Post>posts = this.postRepo.findBypostTitleContaining(keywords);
+		List<PostDto>postDtos = posts.stream().map((post)->this.modelMapper.map(post, PostDto.class)).collect(Collectors.toList());
+		return postDtos;
 	}
 
 }
