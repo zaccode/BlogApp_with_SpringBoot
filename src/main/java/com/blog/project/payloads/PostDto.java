@@ -1,9 +1,11 @@
 package com.blog.project.payloads;
 
 import java.util.Date;
+import java.util.*;
 
 import com.blog.project.entities.Category;
 import com.blog.project.entities.User;
+import com.blog.project.entities.Comment;
 
 import jakarta.validation.constraints.*;
 import lombok.*;
@@ -28,5 +30,7 @@ public class PostDto {
 	private CategoryDto category;
 	
 	private UserDto user;
+	
+	private Set<CommentDto>comments = new HashSet<>();
 
 }

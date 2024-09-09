@@ -1,5 +1,10 @@
 package com.blog.project.payloads;
 
+import java.util.HashSet;
+import java.util.Set;
+
+import com.blog.project.entities.Comment;
+
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
@@ -35,5 +40,6 @@ public class UserDto {
 	@Size(min=10, message="Size must be grater than 10 letters")
  private String about;
  
+//	private Set<CommentDto>comments = new HashSet<>();
  
 }

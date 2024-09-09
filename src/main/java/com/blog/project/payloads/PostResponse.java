@@ -8,7 +8,7 @@ import lombok.*;
 @Getter
 @Setter
 public class PostResponse {
-	
+	//this is used for the pagination purpose
 	private List<PostDto> content;
 	private int pageNumber;
 	private int pageSize;
