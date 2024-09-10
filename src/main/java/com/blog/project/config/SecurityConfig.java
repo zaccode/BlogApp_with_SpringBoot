@@ -1,5 +1,7 @@
 package com.blog.project.config;
 import com.blog.project.security.CustomUserDetailService;
+import com.blog.project.security.JWTAuthenticationEntryPoint;
+import com.blog.project.security.JWTAuthenticationFilter;
 
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -18,6 +20,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.AuthenticationEntryPoint;
 
 @Configuration
@@ -25,7 +28,13 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 public class SecurityConfig {
 	@Autowired
     private  CustomUserDetailService customUserDetailService;
-   
+	
+//	@Autowired
+//	private JWTAuthenticationEntryPoint jwtAuthenticationEntryPoint; 
+	
+	@Autowired
+	private JWTAuthenticationFilter jwtAuthenticationFilter;
+	
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 //    	http
@@ -63,19 +72,27 @@ public class SecurityConfig {
     	
     	
             http
-                .csrf(Customizer.withDefaults())
+//                .csrf(Customizer.withDefaults())
+            	.csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(authorize -> authorize
+                	.requestMatchers("/api/auth/login").permitAll() 
                     .anyRequest().authenticated()
                 )
-                .authenticationProvider(daoAuthenticationProvider())  // Use custom authentication provid
-                .httpBasic(Customizer.withDefaults());
+                .exceptionHandling(exception -> exception
+                      .authenticationEntryPoint(this.authenticationEntryPoint())  // Handle unauthorized access
+                  )
+                .sessionManagement(session -> session
+                      .sessionCreationPolicy(SessionCreationPolicy.STATELESS)  // Stateless session management
+                  )
+                .addFilterBefore(this.jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .authenticationProvider(daoAuthenticationProvider());  // Use custom authentication provid
                 
             return http.build();
         
  }
 
     
-
+//    this code is written in the jwtAuthenticationEntryPoint
     @Bean
     public AuthenticationEntryPoint authenticationEntryPoint() {
         return (request, response, authException) -> {
