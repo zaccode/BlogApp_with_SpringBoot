@@ -8,11 +8,14 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -25,6 +28,7 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
 	@Autowired
     private  CustomUserDetailService customUserDetailService;
@@ -75,7 +79,8 @@ public class SecurityConfig {
 //                .csrf(Customizer.withDefaults())
             	.csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(authorize -> authorize
-                	.requestMatchers("/api/auth/login").permitAll() 
+                	.requestMatchers("/api/auth/**").permitAll() 
+                	.requestMatchers(HttpMethod.GET).permitAll() 
                     .anyRequest().authenticated()
                 )
                 .exceptionHandling(exception -> exception

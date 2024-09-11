@@ -40,6 +40,5 @@ public class UserDto {
 	@Size(min=10, message="Size must be grater than 10 letters")
  private String about;
  
-//	private Set<CommentDto>comments = new HashSet<>();
- 
+ private Set<RoleDto>roles = new HashSet<>();
 }
