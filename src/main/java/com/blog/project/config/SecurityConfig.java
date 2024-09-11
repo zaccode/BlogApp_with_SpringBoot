@@ -24,12 +24,25 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.security.web.AuthenticationEntryPoint;
 
 @Configuration
 @EnableWebSecurity
+@EnableWebMvc//this is used for swagger
 @EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
+	
+	public static final String[] PUBLIC_URLS= {
+			"/api/auth/**",
+			"/v3/api-docs/**",
+			"/v2/api-docs/**",
+			"/swagger-ui/**", 
+			"/swagger-ui.html",
+			"/swagger-resources/**",
+			"/webjars/**"
+	};
+	
 	@Autowired
     private  CustomUserDetailService customUserDetailService;
 	
@@ -79,7 +92,7 @@ public class SecurityConfig {
 //                .csrf(Customizer.withDefaults())
             	.csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(authorize -> authorize
-                	.requestMatchers("/api/auth/**").permitAll() 
+                	.requestMatchers(PUBLIC_URLS).permitAll()
                 	.requestMatchers(HttpMethod.GET).permitAll() 
                     .anyRequest().authenticated()
                 )
